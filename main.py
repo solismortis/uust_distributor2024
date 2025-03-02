@@ -1,5 +1,6 @@
-me = '151-464-963 67'  # Необходимо выключать для Colab
+me = '151-464-963 67'  # Мой ID в системе. Необходимо выключать для Colab
 
+# TODO: Переименовать все "me" в абита
 # TODO: Добавить пустые приоритетные места к общему конкурсу
 # TODO: Распределить приоритетный поток первым, не по приоритетам абитов
 # TODO: Кнопка для тех, кто еще не подал доки
@@ -23,8 +24,9 @@ pd.set_option('display.expand_frame_repr', False)
 pd.set_option('display.max_colwidth', None)
 
 
-comp_groups = {}
+comp_groups = {}  # Основной dict для конкурсных групп
 def add_2_comp_groops(html):
+    """ Парсинг html """
     global comp_groups
     local_comp_groups = []
     fileObj = codecs.open(html, "r", "utf_8_sig")
@@ -53,12 +55,13 @@ def add_2_comp_groops(html):
                                   'places': places,
                                   'basis': basis})
 
-    tables_all = pd.read_html(html, converters={'Уникальный код': str})
+    tables_all = pd.read_html(html, converters={'Уникальный код': str,
+                                                'Приоритет': lambda el: int(re.search(r'\d*', el).group())})
     for i, df in enumerate(tables_all):
         local_comp_groups[i]['df'] = df[['Уникальный код',
-                                         'Сумма балов',
+                                         'Сумма баллов',
                                          'Приоритет']].rename(columns={'Уникальный код': 'id',
-                                                                       'Сумма балов': 'score',
+                                                                       'Сумма баллов': 'score',
                                                                        'Приоритет': 'prio'})
 
     # Удаляем коммерцию
@@ -95,6 +98,7 @@ def create_abits():
             df.drop(to_drop)
 
 
+# Поиск конкурсных групп и баллов выбранного абита
 my_comp_groups = []
 my_score = None
 def create_my_comp_groups():
