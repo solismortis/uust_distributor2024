@@ -4,3 +4,10 @@
 вызванного использованием приоритетов.
 
 Открыть в Colab (заброшено): https://colab.research.google.com/github/solismortis/uust_distributor2024/blob/master/main.ipynb.
+
+В папке data_back_up хранятся сохраненные с сайта УУНИТ в разные дни html.
+
+В папке html files лежат используемые на данные момент html.
+
+main.ipynb использовался для Colab.
+

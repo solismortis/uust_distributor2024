@@ -1,4 +1,6 @@
-""" Gives a very rough approximation of my chances by providing how many unique IDs are above me. """
+""" Заброшенный файл.
+
+Gives a very rough approximation of my chances by providing how many unique IDs are above me."""
 
 import pandas as pd
 
