@@ -53,10 +53,6 @@ def add_2_comp_groops(html):
                                   'places': places,
                                   'basis': basis})
 
-    def convert():
-        
-
-
     tables_all = pd.read_html(html, converters={'Уникальный код': str})
     for i, df in enumerate(tables_all):
         local_comp_groups[i]['df'] = df[['Уникальный код',
