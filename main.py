@@ -1,12 +1,13 @@
-me = '151-464-963 67'  # Мой ID в системе. Необходимо выключать для Colab
+me = '151-464-963 67'  # Мой ID в системе
 
+# TODO: Конкретный ID
 # TODO: Добавить пустые приоритетные места к общему конкурсу
 # TODO: Распределить приоритетный поток первым, не по приоритетам абитов
 # TODO: Кнопка для тех, кто еще не подал доки
 # TODO: Более правильное определение места по баллам
-# TODO: Запилить вероятность поступления с учетом сдающих вступительные
-# TODO: Сохранение в файл
-# TODO: Коммерческий поток
+# TODO: Запилить вероятность поступления с учетом сдающих вступительные?
+# TODO: Сохранение в файл?
+# TODO: Коммерческий поток?
 
 
 import codecs
@@ -16,14 +17,14 @@ import re
 
 import pandas as pd
 
-
 pd.set_option('display.max_rows', None)
 pd.set_option('display.max_columns', None)
 pd.set_option('display.expand_frame_repr', False)
 pd.set_option('display.max_colwidth', None)
 
-
 comp_groups = {}  # Основной dict для конкурсных групп
+
+
 def add_2_comp_groops(html):
     """ Парсинг html """
     global comp_groups
@@ -78,6 +79,8 @@ def add_2_comp_groops(html):
 
 
 abits = {}
+
+
 def create_abits():
     """ Создаем dict для приоритетов абитуриентов """
     for el_key, el_val in comp_groups.items():
@@ -98,10 +101,10 @@ def create_abits():
 
 
 # Поиск конкурсных групп и баллов выбранного абита
-my_comp_groups = []
-my_score = None
 def create_my_comp_groups():
     global my_comp_groups, my_score
+    my_comp_groups = []
+    my_score = None
     for el_key, el_val in comp_groups.items():
         df = el_val['df']
         df1 = df[df['id'] == me].dropna()
@@ -206,6 +209,7 @@ def sorting_algo(comp_groups, abits):
         print(f'Пробег №: {c}')
     return sorted_groups
 
+
 # Пробегаемся по всем сохраненным html
 files = os.listdir('./html files')
 for filename in files:
@@ -221,4 +225,17 @@ printmypos(distributed=True)
 # for my_comp_group in my_comp_groups:
 #     print(my_comp_group)
 #     print(sorted_groups[my_comp_group])
+
+# Конкретный ID
+# me = '207-097-388 72'
+# create_my_comp_groups()
+# printmypos(distributed=True)  # TODO: Не работает
+
+# Аналитика
+groups_of_interest = ["02.03.03 Технологиии искусственного интеллекта, Очная, Бюджет, Общая",
+                      '03.03.01 Моделирование физических процессов и технологий, Очная, Бюджет, Отдельная',
+                      '06.03.01 Общая биология (Сибайский институт), Очная, Бюджет, Общая']
+for group in groups_of_interest:
+    print(sorted_groups[group])
+
 pass
