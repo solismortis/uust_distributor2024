@@ -12,6 +12,7 @@ id = '151-464-963 67'
 
 
 import codecs  # Для HTML
+import copy
 from pprint import pprint
 import os
 import re
@@ -80,7 +81,7 @@ def add_to_comp_groops(html):
 def create_abits():
     """ Создаем dict для приоритетов абитуриентов """
     abits = {}
-    for el_key, el_val in comp_groups.items():
+    for el_key, el_val in original_comp_groups.items():
         df = el_val['df']
         to_drop = []
         for index, row in df.iterrows():
@@ -102,7 +103,7 @@ def create_abits():
 def create_id_comp_groups():
     id_comp_groups = []
     id_score = None
-    for el_key, el_val in comp_groups.items():
+    for el_key, el_val in original_comp_groups.items():
         df = el_val['df']
         df1 = df[df['id'] == id].dropna()
         if not df1.empty:
@@ -114,7 +115,7 @@ def create_id_comp_groups():
 def printpos(distributed, id_score):
     """ Принт позиций id. Ввиду того, как работает сортировка, на принт уйдет только позиция с зачислением,
     поэтому здесь также происходит поиск позиций по баллам в остальных группах. """
-    groups = comp_groups if not distributed else sorted_groups
+    groups = original_comp_groups if not distributed else sorted_groups
     print()
     if not distributed:
         print('Мои позиции до распределения')
@@ -209,7 +210,6 @@ def sorting_algo(comp_groups, abits):
 
 comp_groups = {}  # Основной dict для конкурсных групп. Очищается по мере сортировки.
                   # Поэтому не могу для других id после сортировки
-original_comp_groups = comp_groups.copy()  # Поможет? Пока что все ломает
 
 # Пробегаемся по всем сохраненным html
 files = os.listdir('./html files')
@@ -217,6 +217,7 @@ for filename in files:
     find = re.search(r'\.html', filename)
     if find:
         add_to_comp_groops('./html files/' + filename)
+original_comp_groups = copy.deepcopy(comp_groups)
 
 abits = create_abits()
 id_comp_groups, id_score = create_id_comp_groups()
@@ -227,7 +228,8 @@ printpos(distributed=True, id_score=id_score)
 # Конкретный ID
 id = '139-925-279 07'
 id_comp_groups, id_score = create_id_comp_groups()
-printpos(distributed=True, id_score=id_score)  # TODO: Не работает
+printpos(distributed=False, id_score=id_score)
+printpos(distributed=True, id_score=id_score)
 
 # Аналитика
 groups_of_interest = ["02.03.03 Технологиии искусственного интеллекта, Очная, Бюджет, Общая",
