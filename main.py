@@ -1,5 +1,6 @@
 id = '151-464-963 67'
 
+# TODO: Избавиться от global vars
 # TODO: Конкретный ID
 # TODO: Добавить пустые приоритетные места к общему конкурсу
 # TODO: Распределить приоритетный поток первым, не по приоритетам абитов
@@ -22,10 +23,8 @@ pd.set_option('display.max_columns', None)
 pd.set_option('display.expand_frame_repr', False)
 pd.set_option('display.max_colwidth', None)
 
-comp_groups = {}  # Основной dict для конкурсных групп
 
-
-def add_2_comp_groops(html):
+def add_to_comp_groops(html):
     """ Парсинг html """
     global comp_groups
     local_comp_groups = []
@@ -78,11 +77,9 @@ def add_2_comp_groops(html):
                                          'df': el['df']}
 
 
-abits = {}
-
-
 def create_abits():
     """ Создаем dict для приоритетов абитуриентов """
+    abits = {}
     for el_key, el_val in comp_groups.items():
         df = el_val['df']
         to_drop = []
@@ -98,11 +95,11 @@ def create_abits():
                     abits[abit][row['prio']] = {'comp_group': el_key, 'burnt': False}
         if to_drop:
             df.drop(to_drop)
+    return abits
 
 
 # Поиск конкурсных групп и баллов выбранного абита
 def create_id_comp_groups():
-    global id_comp_groups, id_score
     id_comp_groups = []
     id_score = None
     for el_key, el_val in comp_groups.items():
@@ -111,9 +108,10 @@ def create_id_comp_groups():
         if not df1.empty:
             id_comp_groups.append(el_key)
             id_score = int(df1['score'].iloc[0])
+    return id_comp_groups, id_score
 
 
-def printpos(distributed):
+def printpos(distributed, id_score):
     """ Принт позиций id. Ввиду того, как работает сортировка, на принт уйдет только позиция с зачислением,
     поэтому здесь также происходит поиск позиций по баллам в остальных группах. """
     groups = comp_groups if not distributed else sorted_groups
@@ -208,23 +206,28 @@ def sorting_algo(comp_groups, abits):
     return sorted_groups
 
 
+
+comp_groups = {}  # Основной dict для конкурсных групп. Очищается по мере сортировки.
+                  # Поэтому не могу для других id после сортировки
+original_comp_groups = comp_groups.copy()  # Поможет? Пока что все ломает
+
 # Пробегаемся по всем сохраненным html
 files = os.listdir('./html files')
 for filename in files:
     find = re.search(r'\.html', filename)
     if find:
-        add_2_comp_groops('./html files/' + filename)
+        add_to_comp_groops('./html files/' + filename)
 
-create_abits()
-create_id_comp_groups()
-printpos(distributed=False)
+abits = create_abits()
+id_comp_groups, id_score = create_id_comp_groups()
+printpos(distributed=False, id_score=id_score)
 sorted_groups = sorting_algo(comp_groups, abits)
-printpos(distributed=True)
+printpos(distributed=True, id_score=id_score)
 
 # Конкретный ID
-id = '207-097-388 72'
-create_id_comp_groups()
-printpos(distributed=True)  # TODO: Не работает
+id = '139-925-279 07'
+id_comp_groups, id_score = create_id_comp_groups()
+printpos(distributed=True, id_score=id_score)  # TODO: Не работает
 
 # Аналитика
 groups_of_interest = ["02.03.03 Технологиии искусственного интеллекта, Очная, Бюджет, Общая",
