@@ -109,7 +109,7 @@ def create_id_comp_groups():
     return id_comp_groups, id_score
 
 
-def printpos(distributed, id_comp_groups, id_score):
+def printpos(distributed, id_score):
     """ Принт позиций id. Ввиду того, как работает сортировка, на принт уйдет только позиция с зачислением,
     поэтому здесь также происходит поиск позиций по баллам в остальных группах. """
     groups = original_comp_groups if not distributed else sorted_groups
@@ -205,12 +205,6 @@ def sorting_algo(comp_groups, abits):
     return sorted_groups
 
 
-def handle_id(id):
-    """ Обработка конкретного ID. """
-    id_comp_groups, id_score = create_id_comp_groups()
-    printpos(distributed=False, id_comp_groups=id_comp_groups, id_score=id_score)
-    printpos(distributed=True, id_comp_groups=id_comp_groups, id_score=id_score)
-
 
 comp_groups = {}  # Основной dict для конкурсных групп. Очищается по мере сортировки
 
@@ -225,8 +219,15 @@ original_comp_groups = copy.deepcopy(comp_groups)
 abits = create_abits()
 sorted_groups = sorting_algo(comp_groups, abits)
 
-handle_id('151-464-963 67')
-handle_id('139-925-279 07')
+id = '151-464-963 67'
+id_comp_groups, id_score = create_id_comp_groups()
+printpos(distributed=False, id_score=id_score)
+printpos(distributed=True, id_score=id_score)
+
+id = '139-925-279 07'
+id_comp_groups, id_score = create_id_comp_groups()
+printpos(distributed=False, id_score=id_score)
+printpos(distributed=True, id_score=id_score)
 
 # Аналитика
 groups_of_interest = ["02.03.03 Технологиии искусственного интеллекта, Очная, Бюджет, Общая",
