@@ -1,4 +1,4 @@
-me = '151-464-963 67'  # Мой ID в системе
+id = '151-464-963 67'
 
 # TODO: Конкретный ID
 # TODO: Добавить пустые приоритетные места к общему конкурсу
@@ -10,7 +10,7 @@ me = '151-464-963 67'  # Мой ID в системе
 # TODO: Коммерческий поток?
 
 
-import codecs
+import codecs  # Для HTML
 from pprint import pprint
 import os
 import re
@@ -101,22 +101,20 @@ def create_abits():
 
 
 # Поиск конкурсных групп и баллов выбранного абита
-def create_my_comp_groups():
-    global my_comp_groups, my_score
-    my_comp_groups = []
-    my_score = None
+def create_id_comp_groups():
+    global id_comp_groups, id_score
+    id_comp_groups = []
+    id_score = None
     for el_key, el_val in comp_groups.items():
         df = el_val['df']
-        df1 = df[df['id'] == me].dropna()
+        df1 = df[df['id'] == id].dropna()
         if not df1.empty:
-            my_comp_groups.append(el_key)
-            my_score = int(df1['score'].iloc[0])
-    # pprint(my_comp_groups)
-    # print(f'Мои баллы: {my_score}')
+            id_comp_groups.append(el_key)
+            id_score = int(df1['score'].iloc[0])
 
 
-def printmypos(distributed):
-    """ Принт моих позиций. Ввиду того, как работает сортировка, на принт уйдет только позиция с зачислением,
+def printpos(distributed):
+    """ Принт позиций id. Ввиду того, как работает сортировка, на принт уйдет только позиция с зачислением,
     поэтому здесь также происходит поиск позиций по баллам в остальных группах. """
     groups = comp_groups if not distributed else sorted_groups
     print()
@@ -124,15 +122,15 @@ def printmypos(distributed):
         print('Мои позиции до распределения')
     else:
         print('Мои позиции после распределения')
-    for my_comp_group in my_comp_groups:
-        df = groups[my_comp_group]['df']
-        df1 = df[df['id'] == me].dropna()
+    for group in id_comp_groups:
+        df = groups[group]['df']
+        df1 = df[df['id'] == id].dropna()
         if not df1.empty:
-            print(f'{my_comp_group}: {df1.index.tolist()[0] + 1}')
+            print(f'{group}: {df1.index.tolist()[0] + 1}')
         else:
             for index, row in df[::-1].iterrows():  # Пихаем нас ниже того, у кого столько же или больше баллов
-                if row.loc['score'] >= my_score:
-                    print(f'{my_comp_group}: {index + 2}')
+                if row.loc['score'] >= id_score:
+                    print(f'{group}: {index + 2}')
                     break
     print()
 
@@ -218,24 +216,21 @@ for filename in files:
         add_2_comp_groops('./html files/' + filename)
 
 create_abits()
-create_my_comp_groups()
-printmypos(distributed=False)
+create_id_comp_groups()
+printpos(distributed=False)
 sorted_groups = sorting_algo(comp_groups, abits)
-printmypos(distributed=True)
-# for my_comp_group in my_comp_groups:
-#     print(my_comp_group)
-#     print(sorted_groups[my_comp_group])
+printpos(distributed=True)
 
 # Конкретный ID
-# me = '207-097-388 72'
-# create_my_comp_groups()
-# printmypos(distributed=True)  # TODO: Не работает
+id = '207-097-388 72'
+create_id_comp_groups()
+printpos(distributed=True)  # TODO: Не работает
 
 # Аналитика
 groups_of_interest = ["02.03.03 Технологиии искусственного интеллекта, Очная, Бюджет, Общая",
                       '03.03.01 Моделирование физических процессов и технологий, Очная, Бюджет, Отдельная',
                       '06.03.01 Общая биология (Сибайский институт), Очная, Бюджет, Общая']
-for group in groups_of_interest:
-    print(sorted_groups[group])
+# for group in groups_of_interest:
+#     print(sorted_groups[group])
 
 pass
