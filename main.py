@@ -236,4 +236,6 @@ groups_of_interest = ["02.03.03 Технологиии искусственно�
 # for group in groups_of_interest:
 #     print(sorted_groups[group])
 
+# test
+
 pass
