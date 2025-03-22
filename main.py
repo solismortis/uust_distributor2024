@@ -11,6 +11,7 @@
 
 import codecs  # Для HTML
 import copy
+import json
 from pprint import pprint
 import os
 import re
@@ -109,25 +110,28 @@ def create_id_comp_groups():
     return id_comp_groups, id_score
 
 
-def printpos(distributed, id_score):
-    """ Принт позиций id. Ввиду того, как работает сортировка, на принт уйдет только позиция с зачислением,
+def process_id(distributed, id_score):
+    """ Обработка позиций id. Ввиду того, как работает сортировка, на принт уйдет только позиция с зачислением,
     поэтому здесь также происходит поиск позиций по баллам в остальных группах. """
+    out_dict = {}
     groups = original_comp_groups if not distributed else sorted_groups
     if not distributed:
-        print(f'Позиции id {id} до распределения:')
+        out_dict['text'] = f'Позиции id {id} до распределения:'
     else:
-        print(f'Позиции id {id} после распределения:')
+        out_dict['text'] = f'Позиции id {id} после распределения:'
+    out_dict['groups'] = {}
     for group in id_comp_groups:
         df = groups[group]['df']
-        df1 = df[df['id'] == id].dropna()
-        if not df1.empty:
-            print(f'{group}: {df1.index.tolist()[0] + 1}')
-        else:
+        df1 = df[df['id'] == id].dropna()  # Удаляет пустые строки?
+        if not df1.empty:  # Срабатывает до распределения
+            out_dict['groups'][group] = df1.index.tolist()[0] + 1
+        else:  # Срабатывает после распределения
             for index, row in df[::-1].iterrows():  # Пихаем нас ниже того, у кого столько же или больше баллов
                 if row.loc['score'] >= id_score:
-                    print(f'{group}: {index + 2}')
+                    out_dict['groups'][group] = index + 2
                     break
-    print()
+    return out_dict
+
 
 
 def sorting_algo(comp_groups, abits):
@@ -221,18 +225,21 @@ sorted_groups = sorting_algo(comp_groups, abits)
 
 id = '151-464-963 67'
 id_comp_groups, id_score = create_id_comp_groups()
-printpos(distributed=False, id_score=id_score)
-printpos(distributed=True, id_score=id_score)
+dict0 = process_id(distributed=False, id_score=id_score)
+dict1 = process_id(distributed=True, id_score=id_score)
+combined_arr = [dict0, dict1]
+json_object = json.dumps(combined_arr, indent=4, ensure_ascii=False)
+print(json_object)
 
-id = '139-925-279 07'
-id_comp_groups, id_score = create_id_comp_groups()
-printpos(distributed=False, id_score=id_score)
-printpos(distributed=True, id_score=id_score)
+# id = '139-925-279 07'
+# id_comp_groups, id_score = create_id_comp_groups()
+# print(process_id(distributed=False, id_score=id_score))
+# print(process_id(distributed=True, id_score=id_score))
 
 # Аналитика
-groups_of_interest = ["02.03.03 Технологиии искусственного интеллекта, Очная, Бюджет, Общая",
-                      '03.03.01 Моделирование физических процессов и технологий, Очная, Бюджет, Отдельная',
-                      '06.03.01 Общая биология (Сибайский институт), Очная, Бюджет, Общая']
+# groups_of_interest = ["02.03.03 Технологиии искусственного интеллекта, Очная, Бюджет, Общая",
+#                       '03.03.01 Моделирование физических процессов и технологий, Очная, Бюджет, Отдельная',
+#                       '06.03.01 Общая биология (Сибайский институт), Очная, Бюджет, Общая']
 # for group in groups_of_interest:
 #     print(sorted_groups[group])
 
