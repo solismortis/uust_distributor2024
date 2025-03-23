@@ -233,8 +233,11 @@ print(json_object)
 
 # id = '139-925-279 07'
 # id_comp_groups, id_score = create_id_comp_groups()
-# print(process_id(distributed=False, id_score=id_score))
-# print(process_id(distributed=True, id_score=id_score))
+# dict0 = process_id(distributed=False, id_score=id_score)
+# dict1 = process_id(distributed=True, id_score=id_score)
+# combined_arr = [dict0, dict1]
+# json_object = json.dumps(combined_arr, indent=4, ensure_ascii=False)
+# print(json_object)
 
 # Аналитика
 # groups_of_interest = ["02.03.03 Технологиии искусственного интеллекта, Очная, Бюджет, Общая",
