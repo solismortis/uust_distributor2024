@@ -94,8 +94,9 @@ def create_abits():
     return abits
 
 
-# Поиск конкурсных групп и баллов выбранного абита
-def create_id_comp_groups():
+def process_id(id):
+    """Обработка ID. Возвращает json"""
+    # Поиск конкурсных групп и баллов выбранного абита
     id_comp_groups = []
     id_score = None
     for el_key, el_val in original_comp_groups.items():
@@ -104,31 +105,30 @@ def create_id_comp_groups():
         if not df1.empty:
             id_comp_groups.append(el_key)
             id_score = int(df1['score'].iloc[0])
-    return id_comp_groups, id_score
 
-
-def process_id(distributed, id_comp_groups, id_score):
-    """ Обработка позиций id. Ввиду того, как работает сортировка, на принт уйдет только позиция с зачислением,
-    поэтому здесь также происходит поиск позиций по баллам в остальных группах. """
-    out_dict = {}
-    groups = original_comp_groups if not distributed else sorted_groups
-    if not distributed:
-        out_dict['text'] = f'Позиции id {id} до распределения:'
-    else:
-        out_dict['text'] = f'Позиции id {id} после распределения:'
-    out_dict['groups'] = {}
-    for group in id_comp_groups:
-        df = groups[group]['df']
-        df1 = df[df['id'] == id].dropna()  # Удаляет пустые строки?
-        if not df1.empty:  # Срабатывает до распределения
-            out_dict['groups'][group] = df1.index.tolist()[0] + 1
-        else:  # Срабатывает после распределения
-            for index, row in df[::-1].iterrows():  # Пихаем нас ниже того, у кого столько же или больше баллов
-                if row.loc['score'] >= id_score:
-                    out_dict['groups'][group] = index + 2
-                    break
-    return out_dict
-
+    # Обработка позиций id. Ввиду того, как работает сортировка, на принт уйдет только позиция с зачислением,
+    # поэтому здесь также происходит поиск позиций по баллам в остальных группах
+    arr = []
+    for distributed in (False, True):
+        dict0 = {}
+        groups = original_comp_groups if not distributed else sorted_groups
+        if not distributed:
+            dict0['text'] = f'Позиции id {id} до распределения:'
+        else:
+            dict0['text'] = f'Позиции id {id} после распределения:'
+        dict0['groups'] = {}
+        for group in id_comp_groups:
+            df = groups[group]['df']
+            df1 = df[df['id'] == id].dropna()  # Удаляет пустые строки?
+            if not df1.empty:  # Срабатывает до распределения
+                dict0['groups'][group] = df1.index.tolist()[0] + 1
+            else:  # Срабатывает после распределения
+                for index, row in df[::-1].iterrows():  # Пихаем нас ниже того, у кого столько же или больше баллов
+                    if row.loc['score'] >= id_score:
+                        dict0['groups'][group] = index + 2
+                        break
+        arr.append(dict0)
+    return json.dumps(arr, indent=4, ensure_ascii=False)
 
 
 def sorting_algo(comp_groups, abits):
@@ -220,18 +220,10 @@ original_comp_groups = copy.deepcopy(comp_groups)
 abits = create_abits()
 sorted_groups = sorting_algo(comp_groups, abits)
 
-id = '151-464-963 67'
-id_comp_groups, id_score = create_id_comp_groups()
-dict0 = process_id(distributed=False, id_comp_groups=id_comp_groups, id_score=id_score)
-dict1 = process_id(distributed=True, id_comp_groups=id_comp_groups, id_score=id_score)
-json_object = json.dumps([dict0, dict1], indent=4, ensure_ascii=False)
+json_object = process_id(id='151-464-963 67')
 print(json_object)
 
-id = '139-925-279 07'
-id_comp_groups, id_score = create_id_comp_groups()
-dict0 = process_id(distributed=False, id_comp_groups=id_comp_groups, id_score=id_score)
-dict1 = process_id(distributed=True, id_comp_groups=id_comp_groups, id_score=id_score)
-json_object = json.dumps([dict0, dict1], indent=4, ensure_ascii=False)
+json_object = process_id(id='139-925-279 07')
 print(json_object)
 
 # Аналитика
