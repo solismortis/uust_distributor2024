@@ -1,12 +1,9 @@
-# TODO: Избавиться от global vars
-# TODO: Конкретный ID
 # TODO: Добавить пустые приоритетные места к общему конкурсу
 # TODO: Распределить приоритетный поток первым, не по приоритетам абитов
-# TODO: Кнопка для тех, кто еще не подал доки
 # TODO: Более правильное определение места по баллам
-# TODO: Запилить вероятность поступления с учетом сдающих вступительные?
 # TODO: Сохранение в файл?
 # TODO: Коммерческий поток?
+# TODO: Функция для повторной обработки html
 
 
 import codecs  # Для HTML
@@ -110,7 +107,7 @@ def create_id_comp_groups():
     return id_comp_groups, id_score
 
 
-def process_id(distributed, id_score):
+def process_id(distributed, id_comp_groups, id_score):
     """ Обработка позиций id. Ввиду того, как работает сортировка, на принт уйдет только позиция с зачислением,
     поэтому здесь также происходит поиск позиций по баллам в остальных группах. """
     out_dict = {}
@@ -225,19 +222,17 @@ sorted_groups = sorting_algo(comp_groups, abits)
 
 id = '151-464-963 67'
 id_comp_groups, id_score = create_id_comp_groups()
-dict0 = process_id(distributed=False, id_score=id_score)
-dict1 = process_id(distributed=True, id_score=id_score)
-combined_arr = [dict0, dict1]
-json_object = json.dumps(combined_arr, indent=4, ensure_ascii=False)
+dict0 = process_id(distributed=False, id_comp_groups=id_comp_groups, id_score=id_score)
+dict1 = process_id(distributed=True, id_comp_groups=id_comp_groups, id_score=id_score)
+json_object = json.dumps([dict0, dict1], indent=4, ensure_ascii=False)
 print(json_object)
 
-# id = '139-925-279 07'
-# id_comp_groups, id_score = create_id_comp_groups()
-# dict0 = process_id(distributed=False, id_score=id_score)
-# dict1 = process_id(distributed=True, id_score=id_score)
-# combined_arr = [dict0, dict1]
-# json_object = json.dumps(combined_arr, indent=4, ensure_ascii=False)
-# print(json_object)
+id = '139-925-279 07'
+id_comp_groups, id_score = create_id_comp_groups()
+dict0 = process_id(distributed=False, id_comp_groups=id_comp_groups, id_score=id_score)
+dict1 = process_id(distributed=True, id_comp_groups=id_comp_groups, id_score=id_score)
+json_object = json.dumps([dict0, dict1], indent=4, ensure_ascii=False)
+print(json_object)
 
 # Аналитика
 # groups_of_interest = ["02.03.03 Технологиии искусственного интеллекта, Очная, Бюджет, Общая",
