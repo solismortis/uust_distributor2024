@@ -21,7 +21,7 @@ pd.set_option('display.expand_frame_repr', False)
 pd.set_option('display.max_colwidth', None)
 
 
-def add_to_comp_groops(html):
+def add_to_comp_groups(html):
     """ Парсинг html """
     global comp_groups
     local_comp_groups = []
@@ -206,7 +206,6 @@ def sorting_algo(comp_groups, abits):
     return sorted_groups
 
 
-
 comp_groups = {}  # Основной dict для конкурсных групп. Очищается по мере сортировки
 
 # Пробегаемся по всем сохраненным html
@@ -214,7 +213,7 @@ files = os.listdir('./html files')
 for filename in files:
     find = re.search(r'\.html', filename)
     if find:
-        add_to_comp_groops('./html files/' + filename)
+        add_to_comp_groups('./html files/' + filename)
 original_comp_groups = copy.deepcopy(comp_groups)
 
 abits = create_abits()
@@ -227,10 +226,16 @@ json_object = process_id(id='139-925-279 07')
 print(json_object)
 
 # Аналитика
-# groups_of_interest = ["02.03.03 Технологиии искусственного интеллекта, Очная, Бюджет, Общая",
-#                       '03.03.01 Моделирование физических процессов и технологий, Очная, Бюджет, Отдельная',
-#                       '06.03.01 Общая биология (Сибайский институт), Очная, Бюджет, Общая']
-# for group in groups_of_interest:
-#     print(sorted_groups[group])
+def return_processed_comp_groups(groups_of_interest):
+    arr = []
+    for group in groups_of_interest:
+        group1 = copy.deepcopy(sorted_groups[group])
+        group1['df'] = group1['df'].values.tolist()
+        arr.append(group1)
+    return json.dumps(arr, indent=4, ensure_ascii=False)
 
+groups_of_interest = ['02.03.03 Технологиии искусственного интеллекта, Очная, Бюджет, Общая',
+                      '03.03.01 Моделирование физических процессов и технологий, Очная, Бюджет, Отдельная',
+                      '06.03.01 Общая биология (Сибайский институт), Очная, Бюджет, Общая']
+print(return_processed_comp_groups(groups_of_interest))
 pass
