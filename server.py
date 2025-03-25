@@ -1,12 +1,14 @@
-from http.cookiejar import debug
 
 from flask import *
+import json
+import main
 
 serv=Flask(__name__)
 
-@serv.route('/')
-def first_page():
-    return "It is first page"
+@serv.route('/search')
+def serc():
+    user = request.args.get('id')
+    return main.process_id(user)
 
 if __name__ == "__main__":
-    serv.run(debug=True)
+    serv.run()
