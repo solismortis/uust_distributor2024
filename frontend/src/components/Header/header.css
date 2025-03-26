@@ -1,0 +1,9 @@
+header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-self: flex-start;
+
+  width: 100vw;
+  border-bottom: 0.5px solid #e5e7eb;
+}

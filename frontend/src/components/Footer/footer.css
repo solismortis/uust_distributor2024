@@ -1,0 +1,19 @@
+footer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+
+  width: 100vw;
+  border-top: 0.5px solid #e5e7eb;
+}
+
+.div-dev-info {
+  padding: 3vh 2vw;
+  font-size: 1.5rem;
+}
+
+@media (width < 376px) {
+  .div-dev-info {
+    font-size: 0.9rem;
+  }
+}
