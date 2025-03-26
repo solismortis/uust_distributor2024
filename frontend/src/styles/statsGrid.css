@@ -15,3 +15,8 @@
   padding: 10px 0;
   background-color: #282c34;
 }
+
+.div-abit-rank {
+    display: flex;
+    flex-direction: column;
+}
