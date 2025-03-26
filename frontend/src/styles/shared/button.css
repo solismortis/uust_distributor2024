@@ -1,0 +1,21 @@
+.div-btn {
+  background-color: #50b4cf;
+  color: white;
+  padding: 15px 15px;
+  border-radius: 5px;
+  outline: 0;
+  border: 0; 
+  text-transform: uppercase;
+  margin: 0px;
+  cursor: pointer;
+  
+  transition: ease background-color 250ms;
+
+  &:hover {
+    background-color: #357385;
+  }
+  &:disabled {
+    cursor: default;
+    opacity: 0.7;
+  }
+}
