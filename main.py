@@ -1,6 +1,3 @@
-# TODO: Давать фронту список всех конкурсных групп для ввода для аналитики
-
-
 import codecs  # Для HTML
 import copy
 import json
