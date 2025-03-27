@@ -116,16 +116,18 @@ def process_id(id):
             dict0['text'] = f'Позиции id {id} до распределения:'
         else:
             dict0['text'] = f'Позиции id {id} после распределения:'
-        dict0['groups'] = {}
+        dict0['groups'] = []
         for group in id_comp_groups:
             df = groups[group]['df']
             df1 = df[df['id'] == id].dropna()  # Удаляет пустые строки?
             if not df1.empty:  # Срабатывает до распределения
-                dict0['groups'][group] = df1.index.tolist()[0] + 1
+                dict1 = {'group': group, 'pos': df1.index.tolist()[0] + 1}
+                dict0['groups'].append(dict1)
             else:  # Срабатывает после распределения
                 for index, row in df[::-1].iterrows():  # Пихаем нас ниже того, у кого столько же или больше баллов
                     if row.loc['score'] >= id_score:
-                        dict0['groups'][group] = index + 2
+                        dict1 = {'group': group, 'pos': index + 2}
+                        dict0['groups'].append(dict1)
                         break
         arr.append(dict0)
     return json.dumps(arr, indent=4, ensure_ascii=False)
@@ -226,16 +228,16 @@ json_object = process_id(id='139-925-279 07')
 print(json_object)
 
 # Аналитика
-def return_processed_comp_groups(groups_of_interest):
-    arr = []
-    for group in groups_of_interest:
-        group1 = copy.deepcopy(sorted_groups[group])
-        group1['df'] = group1['df'].values.tolist()
-        arr.append(group1)
-    return json.dumps(arr, indent=4, ensure_ascii=False)
-
-groups_of_interest = ['02.03.03 Технологиии искусственного интеллекта, Очная, Бюджет, Общая',
-                      '03.03.01 Моделирование физических процессов и технологий, Очная, Бюджет, Отдельная',
-                      '06.03.01 Общая биология (Сибайский институт), Очная, Бюджет, Общая']
-print(return_processed_comp_groups(groups_of_interest))
+# def return_processed_comp_groups(groups_of_interest):
+#     arr = []
+#     for group in groups_of_interest:
+#         group1 = copy.deepcopy(sorted_groups[group])
+#         group1['df'] = group1['df'].values.tolist()
+#         arr.append(group1)
+#     return json.dumps(arr, indent=4, ensure_ascii=False)
+#
+# groups_of_interest = ['02.03.03 Технологиии искусственного интеллекта, Очная, Бюджет, Общая',
+#                       '03.03.01 Моделирование физических процессов и технологий, Очная, Бюджет, Отдельная',
+#                       '06.03.01 Общая биология (Сибайский институт), Очная, Бюджет, Общая']
+# print(return_processed_comp_groups(groups_of_interest))
 pass
