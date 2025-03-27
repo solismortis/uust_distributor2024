@@ -1,4 +1,3 @@
-# TODO: Функция для повторной обработки html
 # TODO: Давать фронту список всех конкурсных групп для ввода для аналитики
 
 
@@ -208,6 +207,7 @@ groups = {}  # Основной dict для конкурсных групп. О�
 original_groups = {}
 abits = {}
 sorted_groups = {}
+list_of_all_groups = []  # Для фронта
 
 def process_html_and_sort():
     """ Парсинг html и инициализация сортировки """
@@ -215,6 +215,7 @@ def process_html_and_sort():
     global original_groups
     global abits
     global sorted_groups
+    global list_of_all_groups
 
     # Обнуляем globals
     groups = {}
@@ -225,9 +226,10 @@ def process_html_and_sort():
     # Пробегаемся по всем сохраненным html
     files = os.listdir('./html files')
     for filename in files:
-        find = re.search(r'\.html', filename)
-        if find:
+        match = re.match(r'.*\.html', filename)
+        if match:
             add_to_groups('./html files/' + filename)
+            list_of_all_groups.append(match.group(0)[:-5])
     original_groups = copy.deepcopy(groups)
 
     abits = create_abits()
