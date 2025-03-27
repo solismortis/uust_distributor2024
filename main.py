@@ -206,11 +206,22 @@ def sorting_algo(groups, abits):
 
 groups = {}  # Основной dict для конкурсных групп. Очищается по мере сортировки
 original_groups = {}
+abits = {}
+sorted_groups = {}
 
-def process_html():
-    """ Парсинг html """
+def process_html_and_sort():
+    """ Парсинг html и инициализация сортировки """
     global groups
     global original_groups
+    global abits
+    global sorted_groups
+
+    # Обнуляем globals
+    groups = {}
+    original_groups = {}
+    abits = {}
+    sorted_groups = {}
+
     # Пробегаемся по всем сохраненным html
     files = os.listdir('./html files')
     for filename in files:
@@ -219,28 +230,15 @@ def process_html():
             add_to_groups('./html files/' + filename)
     original_groups = copy.deepcopy(groups)
 
-process_html()
+    abits = create_abits()
+    sorted_groups = sorting_algo(groups, abits)
 
-abits = create_abits()
-sorted_groups = sorting_algo(groups, abits)
-
-json_object = process_id(id='151-464-963 67')
-print(json_object)
-
-json_object = process_id(id='139-925-279 07')
-print(json_object)
 
 # Аналитика
-# def return_processed_groups(groups_of_interest):
-#     arr = []
-#     for group in groups_of_interest:
-#         group1 = copy.deepcopy(sorted_groups[group])
-#         group1['df'] = group1['df'].values.tolist()
-#         arr.append(group1)
-#     return json.dumps(arr, indent=4, ensure_ascii=False)
-#
-# groups_of_interest = ['02.03.03 Технологиии искусственного интеллекта, Очная, Бюджет, Общая',
-#                       '03.03.01 Моделирование физических процессов и технологий, Очная, Бюджет, Отдельная',
-#                       '06.03.01 Общая биология (Сибайский институт), Очная, Бюджет, Общая']
-# print(return_processed_groups(groups_of_interest))
-pass
+def return_processed_groups(groups_of_interest):
+    arr = []
+    for group in groups_of_interest:
+        group1 = copy.deepcopy(sorted_groups[group])
+        group1['df'] = group1['df'].values.tolist()
+        arr.append(group1)
+    return json.dumps(arr, indent=4, ensure_ascii=False)
