@@ -1,9 +1,5 @@
-# TODO: Добавить пустые приоритетные места к общему конкурсу
-# TODO: Распределить приоритетный поток первым, не по приоритетам абитов
-# TODO: Более правильное определение места по баллам
-# TODO: Сохранение в файл?
-# TODO: Коммерческий поток?
 # TODO: Функция для повторной обработки html
+# TODO: Давать фронту список всех конкурсных групп для ввода для аналитики
 
 
 import codecs  # Для HTML
@@ -22,7 +18,7 @@ pd.set_option('display.max_colwidth', None)
 
 
 def add_to_comp_groups(html):
-    """ Парсинг html """
+    """ Добавление групп из html в comp_groups"""
     global comp_groups
     local_comp_groups = []
     fileObj = codecs.open(html, "r", "utf_8_sig")
@@ -209,14 +205,21 @@ def sorting_algo(comp_groups, abits):
 
 
 comp_groups = {}  # Основной dict для конкурсных групп. Очищается по мере сортировки
+original_comp_groups = {}
 
-# Пробегаемся по всем сохраненным html
-files = os.listdir('./html files')
-for filename in files:
-    find = re.search(r'\.html', filename)
-    if find:
-        add_to_comp_groups('./html files/' + filename)
-original_comp_groups = copy.deepcopy(comp_groups)
+def process_html():
+    """ Парсинг html """
+    global comp_groups
+    global original_comp_groups
+    # Пробегаемся по всем сохраненным html
+    files = os.listdir('./html files')
+    for filename in files:
+        find = re.search(r'\.html', filename)
+        if find:
+            add_to_comp_groups('./html files/' + filename)
+    original_comp_groups = copy.deepcopy(comp_groups)
+
+process_html()
 
 abits = create_abits()
 sorted_groups = sorting_algo(comp_groups, abits)
