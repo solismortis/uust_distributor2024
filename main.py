@@ -221,7 +221,7 @@ def process_html_and_sort():
     sorted_groups = {}
 
     # Пробегаемся по всем сохраненным html
-    files = os.listdir('./html files')
+    files = os.listdir('./selenium html files')
     for filename in files:
         match = re.match(r'.*\.html', filename)
         if match:
