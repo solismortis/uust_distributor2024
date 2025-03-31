@@ -18,7 +18,7 @@ def update_html():
         now = datetime.now()
         if now.strftime("%H:%M") == "02:00":
             options = webdriver.FirefoxOptions()
-            options.add_argument("--headless")
+            #options.add_argument("--headless")
             options.add_argument("--no-sandbox")
             options.add_argument("--disable-gpu")
             driver = webdriver.Firefox(options = options)
@@ -26,7 +26,7 @@ def update_html():
             url = "https://list.uust.ru/spisok.php?levelTarget=vo_rang&specialty=&original=originalAll&search_type=snils&snls="
             driver.get(url)
             print("Началось обновление html")
-            for i in range(3,4): #здесь нужно указать от трех до числа специальностей (110)
+            for i in range(3,111): #здесь нужно указать от трех до числа специальностей (Ввести: 111)
                 search_box = driver.find_element(By.NAME, "specialty")
                 search_box.click()
 
@@ -35,7 +35,7 @@ def update_html():
                 search_box.click()
                 html_update = driver.find_element(By.TAG_NAME, "html").get_attribute("outerHTML")
 
-                html_old = open(f"html files/NeW-{spec_name}.html", "w+", encoding="utf-8") #пока что создаю новые html на случай если формат все же не подойдет
+                html_old = open(f"selenium html files/{spec_name}.html", "w+", encoding="utf-8") #сохраняет html в другую папку
                 html_old.write(html_update)
                 html_old.close()
 
