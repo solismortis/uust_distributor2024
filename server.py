@@ -18,7 +18,7 @@ def update_html():
         now = datetime.now()
         if now.strftime("%H:%M") == "02:00":
             options = webdriver.FirefoxOptions()
-            #options.add_argument("--headless")
+            options.add_argument("--headless")
             options.add_argument("--no-sandbox")
             options.add_argument("--disable-gpu")
             driver = webdriver.Firefox(options = options)
