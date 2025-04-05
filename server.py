@@ -12,7 +12,7 @@ import main
 import threading
 import time
 
-main.process_html_and_sort() #надо будет перенести в update_html чтобы обработка проходила каждый день после обновления html
+main.process_html_and_sort()
 
 def update_html():
     while True:
