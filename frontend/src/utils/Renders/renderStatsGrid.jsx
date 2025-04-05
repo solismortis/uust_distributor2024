@@ -4,14 +4,23 @@ function renderStatsGrid(json) {
   return (json?.map(
     course => {
       return (<>
-              <div className='item div-course-name'>
+              <div style={{display:'flex', justifyContent:"space-between", width:"70vw"}}>
                 {course.text}
+                <div className="div-unfold-info" style={{cursor: "pointer"}}>
+                    <span>Подробнее &#8595;</span>
+                </div>
               </div>
-              <div className="item div-abit-rank" style={{textAlign:"center"}}>
-                {course.groups?.map(group => { return (<div style={{ margin: "10px 0" }}>{group}</div>) })}
-              </div>
-              <div className="item div-unfold-info" style={{textAlign:"center", cursor:"pointer"}}>
-                Подробнее &#8595;
+              <div className="grid-stats">
+                  <div className='item' >hi</div>
+                  <div className='item' >hi</div>
+                  {course.groups?.map(elem => { 
+                    return (
+                      <>
+                      <div className='item' >{elem.group}</div>
+                      <div className='item' >{elem.pos}</div>
+                      </>
+                    )})
+                  }
               </div>
               </>);
     }

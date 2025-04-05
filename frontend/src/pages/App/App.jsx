@@ -15,7 +15,7 @@ function App() {
       try {
         setCheck(false)
         // менять ссылку здесь
-        await axios.get("https://jsonplaceholder.typicode.com/posts/"+studentId)
+        await axios.get("http://127.0.0.1:5000/search?id="+studentId)
         .then(res => setJson(res))
       } catch (err) {
         setError(err);
@@ -34,8 +34,8 @@ function App() {
       <button className='div-btn' onClick={() => setStudentId(document.querySelector('.input-id').value)}>Начать поиск!</button>
     </div>
 
-    {error ? <div className='div-error-mes' style={{minHeight:"70vh"}}> {error.message} </div>
-          : check ? <div className="grid-stats"> {renderStatsGrid(json.data)} </div>
+    {error ? <div style={{minHeight:"70vh"}}> {error.message} </div>
+          : check ? <> {renderStatsGrid(json.data)} </>
                   : <div style={{minHeight:"70vh"}}> </div>}
     </>
   );
