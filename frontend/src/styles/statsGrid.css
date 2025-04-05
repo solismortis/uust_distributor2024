@@ -1,22 +1,27 @@
 .grid-stats {
   display: grid;
-  grid-template-columns: 2fr 0.5fr 0.5fr;
-  row-gap: 30px;
-  column-gap: 20px;
-  min-height: 65vh;
+  grid-template-columns: 1fr 1fr;
+  row-gap: 5px;
+  column-gap: 5px;
+  min-height: 20vh;
   margin-bottom: 20px;
+  width: 70vw;
 
   font-size: 1.2rem;
   border: 3px outset #50b4cf36;
   background-color: #50b4cf36;
+  text-align:"center";
 }
 
-.item {
+.grid-stats .item {
+  text-align: center;
   padding: 10px 0;
   background-color: #282c34;
 }
 
-.div-abit-rank {
-    display: flex;
-    flex-direction: column;
+.div-unfold-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+  font-size: 1.2rem;
 }
