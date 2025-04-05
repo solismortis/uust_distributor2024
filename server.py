@@ -12,6 +12,8 @@ import main
 import threading
 import time
 
+main.process_html_and_sort() #надо будет перенести в update_html чтобы обработка проходила каждый день после обновления html
+
 def update_html():
     while True:
         print("Ожидание...")
@@ -45,7 +47,9 @@ def update_html():
                 search_box = driver.find_element(By.CSS_SELECTOR, "div.list-filter-element4:nth-child(3) > select:nth-child(1) > option:nth-child(2)")
                 search_box.click()
             driver.quit()
-            print("Обновление завершилось")
+            print("Началось обновление списков")
+            main.process_html_and_sort()
+            print("Обновления завершились")
         time.sleep(60)
 
 serv=Flask(__name__)
