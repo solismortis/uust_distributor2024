@@ -238,6 +238,10 @@ def return_processed_groups(groups_of_interest):
     arr = []
     for group in groups_of_interest:
         group1 = copy.deepcopy(sorted_groups[group])
-        group1['df'] = group1['df'].values.tolist()
-        arr.append(group1)
+        group2 = {'group': group,
+                  'places': group1['places'],
+                  'basis': group1['basis'],
+                  'df': group1['df'].values.tolist()
+                  }
+        arr.append(group2)
     return json.dumps(arr, indent=4, ensure_ascii=False)
