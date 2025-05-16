@@ -45,6 +45,9 @@ def add_to_groups(html):
     tables_all = pd.read_html(html, converters={'Уникальный код': str,
                                                 'Приоритет': lambda el: int(re.search(r'\d*', el).group())})
     for i, df in enumerate(tables_all):
+        # Здесь происходит удаление абитов без оригиналов
+        df = df[df['Оригинал'] == 'Да']
+
         local_groups[i]['df'] = df[['Уникальный код',
                                     'Сумма баллов',
                                     'Оригинал',
@@ -52,6 +55,9 @@ def add_to_groups(html):
                                                                   'Сумма баллов': 'score',
                                                                   'Оригинал': 'original',
                                                                   'Приоритет': 'prio'})
+
+
+
 
     # Удаляем коммерцию
     local_groups1 = []
