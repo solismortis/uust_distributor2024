@@ -9,17 +9,19 @@ from flask import *
 from flask_cors import CORS
 import json
 import main
+import original
 import threading
 import time
 
 main.process_html_and_sort()
+original.process_html_and_sort()
 
 def update_html():
     while True:
         print("Ожидание...")
         now = datetime.now()
         if now.strftime("%H:%M") == "02:00":
-            options = webdriver.FirefoxOptions()
+            options = webdriver.WPEWebKit()
             options.add_argument("--headless")
             options.add_argument("--no-sandbox")
             options.add_argument("--disable-gpu")
@@ -28,7 +30,7 @@ def update_html():
             url = "https://list.uust.ru/spisok.php?levelTarget=vo_rang&specialty=&original=originalAll&search_type=snils&snls="
             driver.get(url)
             print("Началось обновление html")
-            for i in range(3,111): #здесь нужно указать от трех до числа специальностей (Ввести: 111)
+            for i in range(3,111):
                 search_box = driver.find_element(By.NAME, "specialty")
                 search_box.click()
 
@@ -49,6 +51,7 @@ def update_html():
             driver.quit()
             print("Началось обновление списков")
             main.process_html_and_sort()
+            original.process_html_and_sort()
             print("Обновления завершились")
         time.sleep(60)
 
@@ -63,6 +66,31 @@ def serc():
     user = request.args.get('id')
     return main.process_id(user)
 
+groups_of_interest = [
+                        '02.03.03 Технологиии искусственного интеллекта, Очная, Бюджет, Отдельная',
+                        '03.03.01 Моделирование физических процессов и технологий, Очная, Бюджет, Отдельная',
+                        '06.03.01 Общая биология (Сибайский институт), Очная, Бюджет, Общая']
+json_str_all = main.return_processed_groups(groups_of_interest)
+data_all = json.loads(json_str_all)
+json_str_orig = original.return_processed_groups(groups_of_interest)
+data_orig = json.loads(json_str_orig)
+
+@serv.route('/menu')
+def menu():
+    return render_template('menu.html')
+
+@serv.route('/analytAll')
+def analyt_all():
+    is_orig = False
+    return render_template('Analyt_table.html', data = data_all, orig = is_orig)
+
+@serv.route('/analytOrig')
+def analyt_orig():
+    is_orig = True
+    return render_template('Analyt_table.html', data = data_orig, orig = is_orig)
+
+
+print(data_orig)
 def start_background_task():
     thread = threading.Thread(target=update_html, daemon=True)
     thread.start()
