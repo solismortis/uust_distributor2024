@@ -17,7 +17,7 @@ main.process_html_and_sort()
 original.process_html_and_sort()
 
 def update_html():
-    while True:
+    while not True:
         print("Ожидание...")
         now = datetime.now()
         if now.strftime("%H:%M") == "02:00":
@@ -66,31 +66,67 @@ def serc():
     user = request.args.get('id')
     return main.process_id(user)
 
+# Все группы
+all_groups = [
+    '02.03.03 Технологиии искусственного интеллекта, Очная, Бюджет, Отдельная',
+    '02.03.03 Технологиии искусственного интеллекта, Очная, Бюджет, Общая',
+    '03.03.01 Моделирование физических процессов и технологий, Очная, Бюджет, Отдельная',
+    '06.03.01 Общая биология (Сибайский институт), Очная, Бюджет, Общая'
+]
+
 groups_of_interest = [
-                        '02.03.03 Технологиии искусственного интеллекта, Очная, Бюджет, Отдельная',
-                        '03.03.01 Моделирование физических процессов и технологий, Очная, Бюджет, Отдельная',
-                        '06.03.01 Общая биология (Сибайский институт), Очная, Бюджет, Общая']
-json_str_all = main.return_processed_groups(groups_of_interest)
-data_all = json.loads(json_str_all)
-json_str_orig = original.return_processed_groups(groups_of_interest)
-data_orig = json.loads(json_str_orig)
+                        ]
 
-@serv.route('/menu')
+
+# Построим map: направление -> группы
+direction_map = {}
+for group in all_groups:
+    code = group.split()[0]
+    direction_map.setdefault(code, []).append(group)
+
+@serv.route('/menu', methods=['GET', 'POST'])
 def menu():
-    return render_template('menu.html')
+    if request.method == 'POST':
+        selected_groups = request.form.getlist('group')
+        expanded_dirs = request.form.get('expanded_dirs', '').split(',')
+    else:
+        selected_groups = []
+        expanded_dirs = []
 
-@serv.route('/analytAll')
+    return render_template(
+        'menu.html',
+        direction_map=direction_map,
+        selected_groups=selected_groups,
+        expanded_dirs=expanded_dirs
+    )
+
+@serv.route('/analytAll', methods=['POST'])
 def analyt_all():
-    is_orig = False
-    return render_template('Analyt_table.html', data = data_all, orig = is_orig)
+    selected_groups = request.form.getlist('group')  # выбранные конкурсные группы
+    selected_dirs = request.form.getlist('dir')      # направления (флажки на кодах)
 
-@serv.route('/analytOrig')
+    # Автоматически добавляем все конкурсные группы, если флажок на направлении, но группы не выбраны
+    for code in selected_dirs:
+        if not any(group.startswith(code) for group in selected_groups):
+            selected_groups.extend(direction_map.get(code, []))
+
+    json_str_all = main.return_processed_groups(selected_groups)
+    data_all = json.loads(json_str_all)
+    return render_template('Analyt_table.html', data=data_all, orig=False)
+
+@serv.route('/analytOrig', methods=['POST'])
 def analyt_orig():
-    is_orig = True
-    return render_template('Analyt_table.html', data = data_orig, orig = is_orig)
+    selected_groups = request.form.getlist('group')
+    selected_dirs = request.form.getlist('dir')
 
+    for code in selected_dirs:
+        if not any(group.startswith(code) for group in selected_groups):
+            selected_groups.extend(direction_map.get(code, []))
 
-print(data_orig)
+    json_str_orig = original.return_processed_groups(selected_groups)
+    data_orig = json.loads(json_str_orig)
+    return render_template('Analyt_table.html', data=data_orig, orig=True)
+
 def start_background_task():
     thread = threading.Thread(target=update_html, daemon=True)
     thread.start()
