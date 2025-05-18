@@ -16,44 +16,67 @@ import time
 main.process_html_and_sort()
 original.process_html_and_sort()
 
+def update():
+    options = webdriver.FirefoxOptions()
+    options.add_argument("--headless")
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-gpu")
+    driver = webdriver.Firefox(options=options)
+    names_old = open(f"selenium group names.txt", "w+", encoding="utf-8")
+    names = []
+
+    url = "https://list.uust.ru/spisok.php?levelTarget=vo_rang&specialty=&original=originalAll&search_type=snils&snls="
+    driver.get(url)
+    print("Началось обновление html")
+
+    spec_list = driver.find_elements(By.CSS_SELECTOR,
+                                     "div.list-filter-element4:nth-child(3) > select:nth-child(1) > option")
+    for i in range(3, len(spec_list) + 1):
+        search_box = driver.find_element(By.NAME, "specialty")
+        search_box.click()
+        #   <<< Поиск названия специальности для создания соответствующего файла >>>
+        search_box = driver.find_element(By.CSS_SELECTOR,
+                                         f"div.list-filter-element4:nth-child(3) > select:nth-child(1) > option:nth-child({i})")
+        spec_name = search_box.get_attribute("value")
+        search_box.click()
+        html_update = driver.find_element(By.TAG_NAME, "html").get_attribute("outerHTML")  # Парсинг HTML
+
+        #   << дополнительно парсинг названий конкурсных групп >>
+        spans = driver.find_elements(By.CSS_SELECTOR, "ul.list-head > li:nth-child(3) > span:nth-child(1)")
+        for span in spans:
+            names.append(span.text)
+
+        for name in names:
+            if "Контракт" in name:
+                continue
+            names_old.write(name + '\n')
+        names.clear()
+
+        #   <<< создание(или перезапись если такой файл есть) файла с соответствующим названием >>>
+        html_old = open(f"selenium html files/{spec_name}.html", "w+",
+                        encoding="utf-8")  # сохраняет html в другую папку
+        html_old.write(html_update)
+        html_old.close()
+        #   <<< Возвращение на страницу со всеми специальностями >>>
+        search_box = driver.find_element(By.NAME, "specialty")
+        search_box.click()
+        search_box = driver.find_element(By.CSS_SELECTOR,
+                                         "div.list-filter-element4:nth-child(3) > select:nth-child(1) > option:nth-child(2)")
+        search_box.click()
+    names_old.close()
+    driver.quit()
+    print("Началось обновление списков")
+    main.process_html_and_sort()
+    original.process_html_and_sort()
+    print("Обновления завершились")
+
 def update_html():
-    while not True:
+    while True:
         print("Ожидание...")
         now = datetime.now()
-        if now.strftime("%H:%M") == "02:00":
-            options = webdriver.WPEWebKit()
-            options.add_argument("--headless")
-            options.add_argument("--no-sandbox")
-            options.add_argument("--disable-gpu")
-            driver = webdriver.Firefox(options = options)
-
-            url = "https://list.uust.ru/spisok.php?levelTarget=vo_rang&specialty=&original=originalAll&search_type=snils&snls="
-            driver.get(url)
-            print("Началось обновление html")
-            for i in range(3,111):
-                search_box = driver.find_element(By.NAME, "specialty")
-                search_box.click()
-
-                search_box = driver.find_element(By.CSS_SELECTOR, f"div.list-filter-element4:nth-child(3) > select:nth-child(1) > option:nth-child({i})")
-                spec_name = search_box.get_attribute("value")
-                search_box.click()
-                html_update = driver.find_element(By.TAG_NAME, "html").get_attribute("outerHTML")
-
-                html_old = open(f"selenium html files/{spec_name}.html", "w+", encoding="utf-8") #сохраняет html в другую папку
-                html_old.write(html_update)
-                html_old.close()
-
-                search_box = driver.find_element(By.NAME, "specialty")
-                search_box.click()
-
-                search_box = driver.find_element(By.CSS_SELECTOR, "div.list-filter-element4:nth-child(3) > select:nth-child(1) > option:nth-child(2)")
-                search_box.click()
-            driver.quit()
-            print("Началось обновление списков")
-            main.process_html_and_sort()
-            original.process_html_and_sort()
-            print("Обновления завершились")
-        time.sleep(60)
+        if now.strftime("%H") == "02":
+            update()
+        time.sleep(3600)
 
 serv=Flask(__name__)
 CORS(serv)
@@ -67,16 +90,11 @@ def serc():
     return main.process_id(user)
 
 # Все группы
-all_groups = [
-    '02.03.03 Технологиии искусственного интеллекта, Очная, Бюджет, Отдельная',
-    '02.03.03 Технологиии искусственного интеллекта, Очная, Бюджет, Общая',
-    '03.03.01 Моделирование физических процессов и технологий, Очная, Бюджет, Отдельная',
-    '06.03.01 Общая биология (Сибайский институт), Очная, Бюджет, Общая'
-]
-
-groups_of_interest = [
-                        ]
-
+all_groups = []
+f = open("selenium group names.txt", "r", encoding="utf-8")
+groups = f.readlines()
+for group in groups:
+    all_groups.append(group.strip())
 
 # Построим map: направление -> группы
 direction_map = {}
