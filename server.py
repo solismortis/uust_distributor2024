@@ -84,10 +84,24 @@ CORS(serv)
 def home():
     return "Server is online now"
 
-@serv.route('/search')
-def serc():
-    user = request.args.get('id')
-    return main.process_id(user)
+@serv.route('/search', methods=['GET', 'POST'])
+def search():
+    if request.method == 'POST':
+        user_id = request.form.get('id', '').strip()
+        # получаем JSON-строку от твоей функции
+        json_str = main.process_id(user_id)
+        # разбираем её в Python-структуру
+        try:
+            data = json.loads(json_str)
+        except ValueError:
+            data = []
+        return render_template('search.html',
+                               query=user_id,
+                               results=data)
+    # GET: просто форма
+    return render_template('search.html',
+                           query='',
+                           results=None)
 
 # Все группы
 all_groups = []
