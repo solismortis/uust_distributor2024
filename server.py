@@ -13,19 +13,19 @@ import original
 import threading
 import time
 
+
 main.process_html_and_sort()
 original.process_html_and_sort()
 
-def update():
+def update(url, spec_file, group_file):
     options = webdriver.FirefoxOptions()
     options.add_argument("--headless")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-gpu")
     driver = webdriver.Firefox(options=options)
-    names_old = open(f"selenium group names.txt", "w+", encoding="utf-8")
+    names_old = open(f"{group_file}", "w+", encoding="utf-8")
     names = []
 
-    url = "https://list.uust.ru/spisok.php?levelTarget=vo_rang&specialty=&original=originalAll&search_type=snils&snls="
     driver.get(url)
     print("Началось обновление html")
 
@@ -53,7 +53,7 @@ def update():
         names.clear()
 
         #   <<< создание(или перезапись если такой файл есть) файла с соответствующим названием >>>
-        html_old = open(f"selenium html files/{spec_name}.html", "w+",
+        html_old = open(f"{spec_file}/{spec_name}.html", "w+",
                         encoding="utf-8")  # сохраняет html в другую папку
         html_old.write(html_update)
         html_old.close()
@@ -75,7 +75,9 @@ def update_html():
         print("Ожидание...")
         now = datetime.now()
         if now.strftime("%H") == "02":
-            update()
+            update("https://list.uust.ru/spisok.php?levelTarget=vo_rang&specialty=&original=originalAll&search_type=snils&snls=",
+                   "html files",
+                   "selenium group names.txt")
         time.sleep(3600)
 
 serv=Flask(__name__)
